@@ -29,7 +29,7 @@ export default function UsersView() {
       <DataTable value={Array.isArray(users) ? users : []} paginator={false} className="p-datatable-sm p-shadow-2 mt-4">
         <Column field="nombre" header="Nombre" />
         <Column field="email" header="Email" />
-        <Column field="contrasenia" header="Contraseña" body={(rowData) => (<span> {'•'.repeat(rowData.contrasenia.length)} </span>)}/>
+        <Column field="contrasenia" header="Contraseña" body={(rowData) => (<span> {'•'.repeat(rowData?.contrasenia?.length)} </span>)}/>
         <Column field="edad" header="Edad" />
 
         <Column 
