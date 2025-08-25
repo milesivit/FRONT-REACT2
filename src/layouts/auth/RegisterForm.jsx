@@ -6,6 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Password } from "primereact/password";
 import { Card } from "primereact/card";
+import Navbar from "../components/Navbar";
 
 const RegisterForm = () => {
   const { register } = useContext(AuthContext);
@@ -43,73 +44,76 @@ const RegisterForm = () => {
   };
 
   return (
-    <Card title="Registrarse">
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        {({ handleChange, values }) => (
-          <Form>
-            <label htmlFor="nombre">Nombre</label>
-            <InputText
-              id="nombre"
-              name="nombre"
-              value={values.nombre}
-              onChange={handleChange}
-            />
-            <ErrorMessage name="nombre" component="div" />
+    <div>
+      <Navbar /> 
+      <Card title="Registrarse">
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {({ handleChange, values }) => (
+            <Form>
+              <label htmlFor="nombre">Nombre</label>
+              <InputText
+                id="nombre"
+                name="nombre"
+                value={values.nombre}
+                onChange={handleChange}
+              />
+              <ErrorMessage name="nombre" component="div" />
 
-            <label htmlFor="email">Email</label>
-            <InputText
-              id="email"
-              name="email"
-              value={values.email}
-              onChange={handleChange}
-            />
-            <ErrorMessage name="email" component="div" />
+              <label htmlFor="email">Email</label>
+              <InputText
+                id="email"
+                name="email"
+                value={values.email}
+                onChange={handleChange}
+              />
+              <ErrorMessage name="email" component="div" />
 
-            <label htmlFor="password">Contraseña</label>
-            <Password
-              id="password"
-              name="password"
-              value={values.password}
-              onChange={handleChange}
-              toggleMask
-              feedback={false}
-            />
-            <ErrorMessage name="password" component="div" />
+              <label htmlFor="password">Contraseña</label>
+              <Password
+                id="password"
+                name="password"
+                value={values.password}
+                onChange={handleChange}
+                toggleMask
+                feedback={false}
+              />
+              <ErrorMessage name="password" component="div" />
 
-            <label htmlFor="edad">Edad</label>
-            <InputNumber
-              id="edad"
-              name="edad"
-              value={values.edad}
-              onValueChange={(e) =>
-                handleChange({ target: { name: "edad", value: e.value } })
-              }
-            />
-            <ErrorMessage name="edad" component="div" />
+              <label htmlFor="edad">Edad</label>
+              <InputNumber
+                id="edad"
+                name="edad"
+                value={values.edad}
+                onValueChange={(e) =>
+                  handleChange({ target: { name: "edad", value: e.value } })
+                }
+              />
+              <ErrorMessage name="edad" component="div" />
 
-            <label htmlFor="role">Rol</label>
-            <select
-              id="role"
-              name="role"
-              value={values.role}
-              onChange={handleChange}
-              style={{ width: "100%", padding: "0.5em", marginBottom: "1em" }}
-            >
-              <option value="cliente">Cliente</option>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-            <ErrorMessage name="role" component="div" />
+              <label htmlFor="role">Rol</label>
+              <select
+                id="role"
+                name="role"
+                value={values.role}
+                onChange={handleChange}
+                style={{ width: "100%", padding: "0.5em", marginBottom: "1em" }}
+              >
+                <option value="cliente">Cliente</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+              <ErrorMessage name="role" component="div" />
 
-            <button type="submit">Registrarse</button>
-          </Form>
-        )}
-      </Formik>
-    </Card>
+              <button type="submit">Registrarse</button>
+            </Form>
+          )}
+        </Formik>
+      </Card>
+    </div>
   );
 };
 

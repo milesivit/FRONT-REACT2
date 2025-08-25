@@ -3,7 +3,8 @@ import { exportToPDF } from '../../utils/ExportToPdf';
 import { Link } from 'react-router-dom';
 import { DataTable } from 'primereact/datatable';  
 import { Column } from 'primereact/column';        
-import { Button } from 'primereact/button';   
+import { Button } from 'primereact/button';
+import Navbar from "../components/Navbar";   
 
 export default function ProductsView() {
   const { products, deleteProduct, loading, error } = useProductContext();
@@ -14,6 +15,7 @@ export default function ProductsView() {
 
   return (
     <div>
+      <Navbar />
       <h2>📦 Lista de Productos 📦</h2>
       <Link to="/productos/crear">
         <Button label="Crear nuevo producto" icon="pi pi-plus" className="p-button-rounded p-button-success" />

@@ -42,9 +42,11 @@ function App() {
               <Route
                 path="/usuarios/*"
                 element={
-                  <UserProvider>
-                    <UserRoutes />
-                  </UserProvider>
+                  <PrivateRoute>
+                    <UserProvider>
+                      <UserRoutes />
+                    </UserProvider>
+                  </PrivateRoute>
                 }
               />
             </Routes>

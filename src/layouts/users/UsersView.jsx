@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { DataTable } from 'primereact/datatable';  
 import { Column } from 'primereact/column';        
 import { Button } from 'primereact/button';   
+import Navbar from "../components/Navbar";
 
 export default function UsersView() {
   const { users, deleteUser, loading, error } = useUserContext();
@@ -14,6 +15,7 @@ export default function UsersView() {
 
   return (
     <div>
+      <Navbar />
       <h2>👤 Lista de Usuarios 👤</h2>
       <Link to="/usuarios/crear">
         <Button label="Crear nuevo usuario" icon="pi pi-plus" className="p-button-rounded p-button-success" />
