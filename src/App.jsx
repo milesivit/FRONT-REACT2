@@ -18,6 +18,8 @@ import 'primereact/resources/themes/lara-dark-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
+import PrivateRoute from './utils/PrivateRoute';
+
 function App() {
   return (
     <Router>
@@ -30,9 +32,11 @@ function App() {
               <Route
                 path="/productos/*"
                 element={
-                  <ProductProvider>
-                    <ProductRoutes />
-                  </ProductProvider>
+                  <PrivateRoute>
+                    <ProductProvider>
+                      <ProductRoutes />
+                    </ProductProvider>
+                  </PrivateRoute>
                 }
               />
               <Route

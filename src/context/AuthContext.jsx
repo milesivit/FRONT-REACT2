@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext()
 
@@ -8,28 +9,71 @@ export const AuthProvider = ({children}) =>{
     const [user,setUser] = useState(null)
     const navigate = useNavigate()
 
+    const decodeUser = (token)=>{
+        try {
+            const decoded = jwtDecode(token)
+            if(!decoded.exp || decoded.exp * 1000 < Date.now()){
+                return null;
+            }  
+            console.log("decoded", decoded);
+            
+            return{
+                id: decoded.user.id,
+                nombre:decoded.user.nombre,
+                email: decoded.user.email,
+                edad: decoded.user.edad,
+                role: decoded.user.role
+            }
+        } catch {
+            return null
+        }
+    }
+
     useEffect(()=>{
         const token = localStorage.getItem('token')
-        if(token){
-            const payload = JSON.parse(token.split('.')[1])
-            setUser({...payload, token})
+        if(!token)return
+
+        const userLogued = decodeUser(token)
+        if(userLogued){
+        setUser(userLogued)
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
+        }else{
+            localStorage.removeItem('token')
+            delete axios.defaults.headers.common["Authorization"]
+            setUser(null)
         }
     },[])
+    
 
     const login = async (credentials)=>{
         try {
             const response = await axios.post('http://localhost:3000/auth/login',credentials)
-
-            const token = response.token
-            localStorage.setItem('token', token)
-            const payload = JSON.parse(token.split('.')[1])
-            setUser({...payload, token})
-            navigate('/')
+            console.log(response);
+            if(response.status === 200){
+                const token = response?.data?.token
+                localStorage.setItem('token', token)
+                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
+                const userLogued = decodeUser(token)
+                console.log("userLogued", userLogued);
+                if(!userLogued){
+                    localStorage.removeItem('token')
+                    delete axios.defaults.headers.common["Authorization"]
+                    alert("Token invalido o esta expirado")
+                    return
+                }
+                
+                setUser(userLogued)
+                navigate('/')
+            }else{
+                alert('Las credenciales son erroneas')
+            }
         } catch (error) {
+            console.log(error);
+            
             alert("Hubo error al iniciar sesion")
         }
     }
-
+    
     const register = async (userData) =>{
         try {
             const response = await axios.post('http://localhost:3000/auth/register', userData)
@@ -47,6 +91,7 @@ export const AuthProvider = ({children}) =>{
     const logout = () =>{
         setUser(null)
         localStorage.removeItem('token')
+        delete axios.defaults.headers.common["Authorization"]
         navigate('/inicio-sesion')
     }
 
