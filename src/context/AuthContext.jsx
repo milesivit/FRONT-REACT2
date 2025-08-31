@@ -8,6 +8,7 @@ export const AuthContext = createContext()
 export const AuthProvider = ({children}) =>{
     const [user,setUser] = useState(null)
     const navigate = useNavigate()
+    const [justLoggedIn, setJustLoggedIn] = useState(false)
 
     const decodeUser = (token)=>{
         try {
@@ -48,29 +49,31 @@ export const AuthProvider = ({children}) =>{
     const login = async (credentials)=>{
         try {
             const response = await axios.post('http://localhost:3000/auth/login',credentials)
+
             console.log(response);
             if(response.status === 200){
                 const token = response?.data?.token
                 localStorage.setItem('token', token)
                 axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
+
                 const userLogued = decodeUser(token)
                 console.log("userLogued", userLogued);
                 if(!userLogued){
                     localStorage.removeItem('token')
                     delete axios.defaults.headers.common["Authorization"]
-                    alert("Token invalido o esta expirado")
-                    return
+                    throw new Error("Token inválido o expirado")  //lanzo error para toast
                 }
                 
                 setUser(userLogued)
+                setJustLoggedIn(true)
                 navigate('/')
+                return true //devolvemos algo que indique éxito
             }else{
-                alert('Las credenciales son erroneas')
+                throw new Error("Credenciales inválidas") // lanzo error
             }
         } catch (error) {
             console.log(error);
-            
-            alert("Hubo error al iniciar sesion")
+            throw error //propagamos el error al LoginForm
         }
     }
     
@@ -81,10 +84,10 @@ export const AuthProvider = ({children}) =>{
                 alert("Usuario creado exitosamente")
                 navigate('/inicio-sesion')
             }else{
-                alert(response.message)
+                throw new Error("Hubo un error al registrar el usuario")
             }
         } catch (error) {
-            alert("Hubo un error al registrar el usuario")
+            throw error
         }
     }
 
@@ -96,7 +99,7 @@ export const AuthProvider = ({children}) =>{
     }
 
     return(
-        <AuthContext.Provider value={{user, setUser, register, login, logout}}>
+        <AuthContext.Provider value={{user, setUser, register, login, logout, justLoggedIn, setJustLoggedIn}}>
             {children}
         </AuthContext.Provider>
     )

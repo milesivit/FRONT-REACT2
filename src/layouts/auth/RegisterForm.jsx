@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -6,17 +6,20 @@ import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Password } from "primereact/password";
 import { Card } from "primereact/card";
+import { Toast } from "primereact/toast";
+import { Button } from "primereact/button";
 import Navbar from "../components/Navbar";
 
 const RegisterForm = () => {
   const { register } = useContext(AuthContext);
+  const toast = useRef(null);
 
   const initialValues = {
     nombre: "",
     email: "",
     password: "",
     edad: null,
-    role: "cliente", // valor inicial
+    role: "cliente",
   };
 
   const validationSchema = Yup.object({
@@ -39,80 +42,157 @@ const RegisterForm = () => {
       edad: values.edad,
       role: values.role,
     };
-    await register(dataToSend);
-    resetForm();
+    try {
+      await register(dataToSend);
+      resetForm();
+      toast.current.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: "Usuario registrado correctamente",
+        life: 3000,
+      });
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Credenciales inválidas",
+        life: 3000,
+      });
+    }
   };
 
   return (
-    <div>
-      <Navbar /> 
-      <Card title="Registrarse">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={onSubmit}
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <Navbar />
+
+      <Toast ref={toast} />
+
+      <div className="flex justify-center items-center flex-1 p-6">
+        <Card
+          title="Registrarse"
+          className="shadow-lg w-full max-w-md"
         >
-          {({ handleChange, values }) => (
-            <Form>
-              <label htmlFor="nombre">Nombre</label>
-              <InputText
-                id="nombre"
-                name="nombre"
-                value={values.nombre}
-                onChange={handleChange}
-              />
-              <ErrorMessage name="nombre" component="div" />
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            {({ handleChange, values }) => (
+              <Form className="flex flex-col gap-4">
+                {/* Nombre */}
+                <div>
+                  <label htmlFor="nombre" className="block mb-1 font-semibold">
+                    Nombre
+                  </label>
+                  <InputText
+                    id="nombre"
+                    name="nombre"
+                    className="w-full"
+                    value={values.nombre}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage
+                    name="nombre"
+                    component="small"
+                    className="p-error block"
+                  />
+                </div>
 
-              <label htmlFor="email">Email</label>
-              <InputText
-                id="email"
-                name="email"
-                value={values.email}
-                onChange={handleChange}
-              />
-              <ErrorMessage name="email" component="div" />
+                {/* Email */}
+                <div>
+                  <label htmlFor="email" className="block mb-1 font-semibold">
+                    Email
+                  </label>
+                  <InputText
+                    id="email"
+                    name="email"
+                    className="w-full"
+                    value={values.email}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="small"
+                    className="p-error block"
+                  />
+                </div>
 
-              <label htmlFor="password">Contraseña</label>
-              <Password
-                id="password"
-                name="password"
-                value={values.password}
-                onChange={handleChange}
-                toggleMask
-                feedback={false}
-              />
-              <ErrorMessage name="password" component="div" />
+                {/* Contraseña */}
+                <div>
+                  <label htmlFor="password" className="block mb-1 font-semibold">
+                    Contraseña
+                  </label>
+                  <Password
+                    id="password"
+                    name="password"
+                    className="w-full"
+                    value={values.password}
+                    onChange={handleChange}
+                    toggleMask
+                    feedback={false}
+                  />
+                  <ErrorMessage
+                    name="password"
+                    component="small"
+                    className="p-error block"
+                  />
+                </div>
 
-              <label htmlFor="edad">Edad</label>
-              <InputNumber
-                id="edad"
-                name="edad"
-                value={values.edad}
-                onValueChange={(e) =>
-                  handleChange({ target: { name: "edad", value: e.value } })
-                }
-              />
-              <ErrorMessage name="edad" component="div" />
+                {/* Edad */}
+                <div>
+                  <label htmlFor="edad" className="block mb-1 font-semibold">
+                    Edad
+                  </label>
+                  <InputNumber
+                    id="edad"
+                    name="edad"
+                    className="w-full"
+                    value={values.edad}
+                    onValueChange={(e) =>
+                      handleChange({ target: { name: "edad", value: e.value } })
+                    }
+                  />
+                  <ErrorMessage
+                    name="edad"
+                    component="small"
+                    className="p-error block"
+                  />
+                </div>
 
-              <label htmlFor="role">Rol</label>
-              <select
-                id="role"
-                name="role"
-                value={values.role}
-                onChange={handleChange}
-                style={{ width: "100%", padding: "0.5em", marginBottom: "1em" }}
-              >
-                <option value="cliente">Cliente</option>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-              <ErrorMessage name="role" component="div" />
+                {/* Rol */}
+                <div>
+                  <label htmlFor="role" className="block mb-1 font-semibold">
+                    Rol
+                  </label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={values.role}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded-md"
+                  >
+                    <option value="cliente">Cliente</option>
+                    <option value="moderador">Moderador</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <ErrorMessage
+                    name="role"
+                    component="small"
+                    className="p-error block"
+                  />
+                </div>
 
-              <button type="submit">Registrarse</button>
-            </Form>
-          )}
-        </Formik>
-      </Card>
+                {/* Botón */}
+                <Button
+                  type="submit"
+                  label="Registrarse"
+                  className="w-full mt-4"
+                />
+              </Form>
+            )}
+          </Formik>
+        </Card>
+      </div>
     </div>
   );
 };

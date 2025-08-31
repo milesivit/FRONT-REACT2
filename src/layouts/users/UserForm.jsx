@@ -9,10 +9,6 @@ const validationSchema = Yup.object({
   nombre: Yup.string()
     .required("El nombre es requerido"),
 
-  contrasenia: Yup.string()
-    .required("La contraseña es requerida")
-    .min(6, "La contraseña debe tener al menos 6 caracteres"),
-
   email: Yup.string()
     .email("Debe ser un email válido")
     .required("El email es requerido"),
@@ -22,19 +18,21 @@ const validationSchema = Yup.object({
     .integer("La edad debe ser un número entero")
     .positive("La edad debe ser mayor que 0")
     .required("La edad es requerida"),
-});
 
+  role: Yup.string()
+    .oneOf(["admin", "moderador", "cliente"], "Rol inválido")
+    .required("El rol es requerido"),         
+});
 
 export default function UserForm() {
   const { users, addUser, editUser } = useUserContext();
-  const [showPassword, setShowPassword] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState({
     nombre: "",
     email: "",
-    contrasenia: "",
     edad: 0,
+    role: "cliente",
   });
 
   const isEdit = Boolean(id);
@@ -46,8 +44,8 @@ export default function UserForm() {
         setInitialValues({
           nombre: user.nombre || "",
           email: user.email || "",
-          contrasenia: user.contrasenia || "",
           edad: user.edad || 0,
+          role: user.role || "cliente",
         });
       }
     }
@@ -105,31 +103,6 @@ export default function UserForm() {
           </div>
 
           <div>
-            <label>Contraseña:</label>
-            <div className="p-inputgroup p-mb-1">
-              <Field
-                name="contrasenia"
-                type={showPassword ? "text" : "password"}
-                placeholder="Contraseña del usuario"
-                className="p-inputtext p-component"
-              />
-              <span
-                className="p-inputgroup-addon"
-                style={{ cursor: "pointer" }}
-                onClick={() => setShowPassword((prev) => !prev)}
-              >
-                <i className={`pi ${showPassword ? "pi-eye-slash" : "pi-eye"}`} />
-              </span>
-            </div>
-            <ErrorMessage
-              name="contrasenia"
-              component="div"
-              className="p-text-danger"
-            />
-          </div>
-
-
-          <div>
             <label>Edad:</label>
             <Field
               name="edad"
@@ -139,6 +112,25 @@ export default function UserForm() {
             />
             <ErrorMessage
               name="edad"
+              component="div"
+              className="p-text-danger"
+            />
+          </div>
+
+          <div>
+            <label>Rol:</label>
+            <Field
+              as="select"
+              name="role"
+              className="p-inputtext p-component p-mb-3"
+            >
+              <option value="">Seleccione un rol</option>
+              <option value="cliente">Cliente</option>
+              <option value="admin">Admin</option>
+              <option value="moderador">Moderador</option>
+            </Field>
+            <ErrorMessage
+              name="role"
               component="div"
               className="p-text-danger"
             />
