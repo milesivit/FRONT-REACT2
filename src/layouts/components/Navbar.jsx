@@ -68,9 +68,21 @@ const Navbar = () => {
     </Link>
   );
 
+  const end = user ? (
+    <div className="flex items-center gap-2">
+      <span className="font-medium">{user.nombre} </span>
+      <span className={`px-2 py-1 rounded-full text-white text-xs 
+                        ${user.role === 'admin' ? 'bg-red-500' :
+                           user.role === 'moderador' ? 'bg-blue-500' :
+                           'bg-green-500'}`}>
+        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+      </span>
+    </div>
+  ) : null;
+
   return (
     <div className="card">
-      <Menubar model={items} start={start} />
+      <Menubar model={items} start={start} end={end}/>
     </div>
   );
 };

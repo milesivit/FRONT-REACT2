@@ -9,11 +9,17 @@ export const ProductProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const token = localStorage.getItem("token"); 
 
     const getProducts = async () => {
         setLoading(true);
         try {
-            const { data: responseData } = await axios.get(BASE_URL);
+            const { data: responseData } = await axios.get(BASE_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log("TOKEN:", token);
             console.log("Respuesta productos:", responseData);
             setProducts(Array.isArray(responseData.data) ? responseData.data : []);
         } catch (e) {
@@ -22,11 +28,15 @@ export const ProductProvider = ({ children }) => {
             setLoading(false);
         }
     };
-
+    
     const addProduct = async (newProduct) => {
         setLoading(true);
         try {
-            const { data: responseData } = await axios.post(BASE_URL, newProduct);
+            const { data: responseData } = await axios.post(BASE_URL, newProduct, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             const created = Array.isArray(responseData.data) ? responseData.data[0] : responseData.data || responseData;
             setProducts(prev => Array.isArray(prev) ? [...prev, created] : [created]);
         } catch (e) {
@@ -35,28 +45,42 @@ export const ProductProvider = ({ children }) => {
             setLoading(false);
         }
     };
+    
 
     const editProduct = async (id, updated) => {
         setLoading(true);
         try {
-            await axios.put(`${BASE_URL}/${id}`, updated);
+            const { data: responseData } = await axios.put(`${BASE_URL}/${id}`, updated, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             setProducts(prev =>
-                prev.map(u => (u.id === id ? { ...updated, id: id } : u)));
+                prev.map(p => (p.id === id ? responseData.data : p))
+            );
         } catch (e) {
             setError(e.message);
         } finally {
             setLoading(false);
         }
     };
-
+    
     const deleteProduct = async (id) => {
+        setLoading(true);
         try {
-            await axios.delete(`${BASE_URL}/${id}`);
-            setProducts(prev => prev.filter(u => u.id !== id));
+            await axios.delete(`${BASE_URL}/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setProducts(prev => prev.filter(p => p.id !== id));
         } catch (e) {
             setError(e.message);
+        } finally {
+            setLoading(false);
         }
     };
+    
 
     useEffect(() => {
         getProducts();

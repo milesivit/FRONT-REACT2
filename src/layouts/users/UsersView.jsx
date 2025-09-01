@@ -6,12 +6,19 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';   
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import Navbar from "../components/Navbar";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { FilterMatchMode } from 'primereact/api';
 import { AuthContext } from "../../context/AuthContext";
 
 export default function UsersView() {
   const { users, deleteUser, loading, error } = useUserContext();
   const { user } = useContext(AuthContext);
+  const [filters, setFilters] = useState({
+    nombre: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    email: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    role: { value: null, matchMode: FilterMatchMode.CONTAINS }
+  
+  });
 
   const handleExport = () => {
     exportToPDF(users, 'Usuarios', ['nombre', 'email', 'edad', 'role']);
@@ -56,10 +63,47 @@ export default function UsersView() {
 
       <ConfirmDialog />
 
+      <div className="p-mb-2 mt-4" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <input 
+          type="text" 
+          placeholder="Buscar por nombre" 
+          value={filters.nombre.value || ''} 
+          onChange={(e) => setFilters({
+            ...filters,
+            nombre: { ...filters.nombre, value: e.target.value }
+          })}
+          className="p-inputtext p-component"
+          style={{ width: '200px' }} 
+        />
+        <input 
+          type="text" 
+          placeholder="Buscar por email" 
+          value={filters.email.value || ''} 
+          onChange={(e) => setFilters({
+            ...filters,
+            email: { ...filters.email, value: e.target.value }
+          })}
+          className="p-inputtext p-component"
+          style={{ width: '200px' }} 
+        />
+        <input 
+          type="text" 
+          placeholder="Buscar por Rol" 
+          value={filters.role.value || ''} 
+          onChange={(e) => setFilters({
+            ...filters,
+            role: { ...filters.role, value: e.target.value }
+          })}
+          className="p-inputtext p-component"
+          style={{ width: '200px' }} 
+        />
+      </div>
+
       <DataTable 
         value={Array.isArray(users) ? users : []} 
         paginator={false} 
         className="p-datatable-sm p-shadow-2 mt-4"
+        filters={filters}
       >
         <Column field="nombre" header="Nombre" />
         <Column field="email" header="Email" />

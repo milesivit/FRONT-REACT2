@@ -19,40 +19,59 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
 import PrivateRoute from './utils/PrivateRoute';
+import PublicRoute from './utils/PublicRoute'; // <- agregar
 
 function App() {
   return (
     <Router>
-        <AuthProvider>
-          <Fragment>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path='/inicio-sesion' element={<LoginForm/>}/>
-              <Route path='/registro' element={<RegisterForm/>}/>
-              <Route
-                path="/productos/*"
-                element={
-                  <PrivateRoute>
-                    <ProductProvider>
-                      <ProductRoutes />
-                    </ProductProvider>
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/usuarios/*"
-                element={
-                  <PrivateRoute>
-                    <UserProvider>
-                      <UserRoutes />
-                    </UserProvider>
-                  </PrivateRoute>
-                }
-              />
-            </Routes>
-          </Fragment>
-        </AuthProvider>
-      </Router>
+      <AuthProvider>
+        <Fragment>
+          <Routes>
+            <Route path="/" element={<Home />} />
+
+            {/* Rutas públicas */}
+            <Route
+              path="/inicio-sesion"
+              element={
+                <PublicRoute>
+                  <LoginForm />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/registro"
+              element={
+                <PublicRoute>
+                  <RegisterForm />
+                </PublicRoute>
+              }
+            />
+
+            {/* Rutas privadas */}
+            <Route
+              path="/productos/*"
+              element={
+                <PrivateRoute>
+                  <ProductProvider>
+                    <ProductRoutes />
+                  </ProductProvider>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/usuarios/*"
+              element={
+                <PrivateRoute>
+                  <UserProvider>
+                    <UserRoutes />
+                  </UserProvider>
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </Fragment>
+      </AuthProvider>
+    </Router>
   );
 }
 

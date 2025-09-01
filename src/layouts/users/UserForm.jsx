@@ -5,24 +5,30 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 
-const validationSchema = Yup.object({
-  nombre: Yup.string()
-    .required("El nombre es requerido"),
+const getValidationSchema = (isEdit) =>
+  Yup.object({
+    nombre: Yup.string().required("El nombre es requerido"),
 
-  email: Yup.string()
-    .email("Debe ser un email válido")
-    .required("El email es requerido"),
+    email: Yup.string()
+      .email("Debe ser un email válido")
+      .required("El email es requerido"),
 
-  edad: Yup.number()
-    .typeError("La edad debe ser un número")
-    .integer("La edad debe ser un número entero")
-    .positive("La edad debe ser mayor que 0")
-    .required("La edad es requerida"),
+    edad: Yup.number()
+      .typeError("La edad debe ser un número")
+      .integer("La edad debe ser un número entero")
+      .positive("La edad debe ser mayor que 0")
+      .required("La edad es requerida"),
 
-  role: Yup.string()
-    .oneOf(["admin", "moderador", "cliente"], "Rol inválido")
-    .required("El rol es requerido"),         
-});
+    role: Yup.string()
+      .oneOf(["admin", "moderador", "cliente"], "Rol inválido")
+      .required("El rol es requerido"),
+
+    contrasenia: isEdit
+      ? Yup.string().notRequired() //para q no me pida modificar la contra en edit
+      : Yup.string()
+          .min(6, "La contraseña debe tener al menos 6 caracteres")
+          .required("La contraseña es requerida"),
+  });
 
 export default function UserForm() {
   const { users, addUser, editUser } = useUserContext();
@@ -33,6 +39,7 @@ export default function UserForm() {
     email: "",
     edad: 0,
     role: "cliente",
+    contrasenia: "",
   });
 
   const isEdit = Boolean(id);
@@ -46,6 +53,7 @@ export default function UserForm() {
           email: user.email || "",
           edad: user.edad || 0,
           role: user.role || "cliente",
+          contrasenia: "",
         });
       }
     }
@@ -66,7 +74,7 @@ export default function UserForm() {
       <Formik
         initialValues={initialValues}
         enableReinitialize
-        validationSchema={validationSchema}
+        validationSchema={getValidationSchema(isEdit)} 
         onSubmit={handleSubmit}
       >
         <Form
@@ -80,11 +88,7 @@ export default function UserForm() {
               className="p-inputtext p-component p-mb-3"
               placeholder="Nombre del usuario"
             />
-            <ErrorMessage
-              name="nombre"
-              component="div"
-              className="p-text-danger"
-            />
+            <ErrorMessage name="nombre" component="div" className="p-text-danger" />
           </div>
 
           <div>
@@ -95,12 +99,21 @@ export default function UserForm() {
               className="p-inputtext p-component p-mb-3"
               placeholder="email del usuario"
             />
-            <ErrorMessage
-              name="email"
-              component="div"
-              className="p-text-danger"
-            />
+            <ErrorMessage name="email" component="div" className="p-text-danger" />
           </div>
+
+          {!isEdit && (
+            <div>
+              <label>Contraseña:</label>
+              <Field
+                name="contrasenia"
+                type="password"
+                className="p-inputtext p-component p-mb-3"
+                placeholder="Contraseña"
+              />
+              <ErrorMessage name="contrasenia" component="div" className="p-text-danger" />
+            </div>
+          )}
 
           <div>
             <label>Edad:</label>
@@ -110,30 +123,18 @@ export default function UserForm() {
               className="p-inputtext p-component p-mb-3"
               placeholder="Edad"
             />
-            <ErrorMessage
-              name="edad"
-              component="div"
-              className="p-text-danger"
-            />
+            <ErrorMessage name="edad" component="div" className="p-text-danger" />
           </div>
 
           <div>
             <label>Rol:</label>
-            <Field
-              as="select"
-              name="role"
-              className="p-inputtext p-component p-mb-3"
-            >
+            <Field as="select" name="role" className="p-inputtext p-component p-mb-3">
               <option value="">Seleccione un rol</option>
               <option value="cliente">Cliente</option>
               <option value="admin">Admin</option>
               <option value="moderador">Moderador</option>
             </Field>
-            <ErrorMessage
-              name="role"
-              component="div"
-              className="p-text-danger"
-            />
+            <ErrorMessage name="role" component="div" className="p-text-danger" />
           </div>
 
           <div className="p-d-flex p-gap-3">
