@@ -8,11 +8,14 @@ import { Card } from "primereact/card"
 import { Button } from "primereact/button"
 import { Toast } from "primereact/toast"
 import Navbar from "../components/Navbar";
-        
+import { useNavigate } from "react-router-dom"
+
 const LoginForm = () =>{
 
     const { login } = useContext(AuthContext)
     const toast = useRef(null)
+    const navigate = useNavigate();
+
 
     const initialValuesUser = {
         email:'',
@@ -64,6 +67,14 @@ const LoginForm = () =>{
                     </Form>
                 )}
                 </Formik>
+                <button 
+                    type="button" 
+                    style={{ cursor: "pointer", border: "none", background: "none", padding: 0 }}
+                    onClick={() => navigate('/clave-olvidada')}
+                    >
+                    <h4>¿Olvidó su contraseña?</h4>
+                </button>
+
             </Card>
         </div>
     )

@@ -98,8 +98,19 @@ export const AuthProvider = ({children}) =>{
         navigate('/inicio-sesion')
     }
 
+    const forgotPassword = async (email) =>{
+        try {
+            await axios.post('http://localhost:3000/auth/forgotPassword', {email})
+            alert('revisa tu correo electronico')
+            return true
+        } catch (error) {
+            console.log(error.response.data || error)
+            return false
+        }
+    }
+
     return(
-        <AuthContext.Provider value={{user, setUser, register, login, logout, justLoggedIn, setJustLoggedIn}}>
+        <AuthContext.Provider value={{user, setUser, register, login, logout, justLoggedIn, setJustLoggedIn, forgotPassword}}>
             {children}
         </AuthContext.Provider>
     )

@@ -18,8 +18,11 @@ import 'primereact/resources/themes/lara-dark-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
+import ForgotPassword from './layouts/auth/ForgotPassword';
+
 import PrivateRoute from './utils/PrivateRoute';
 import PublicRoute from './utils/PublicRoute'; // <- agregar
+import ResetPassword from './layouts/auth/ResetPassword';
 
 function App() {
   return (
@@ -28,8 +31,10 @@ function App() {
         <Fragment>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/clave-olvidada" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Rutas públicas */}
+            {/* rutas publicas */}
             <Route
               path="/inicio-sesion"
               element={
