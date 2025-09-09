@@ -32,7 +32,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/clave-olvidada" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/recuperar-contrasenia" element={<ResetPassword />} />
 
             {/* rutas publicas */}
             <Route

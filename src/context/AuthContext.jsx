@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import authService from '../services/authService'
 
 export const AuthContext = createContext()
 
@@ -48,32 +49,25 @@ export const AuthProvider = ({children}) =>{
 
     const login = async (credentials)=>{
         try {
-            const response = await axios.post('http://localhost:3000/auth/login',credentials)
-
-            console.log(response);
-            if(response.status === 200){
-                const token = response?.data?.token
+            const {data, status} = await authService.login(credentials)
+            if(status===200){
+                const token = data?.token
                 localStorage.setItem('token', token)
-                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
 
                 const userLogued = decodeUser(token)
                 console.log("userLogued", userLogued);
                 if(!userLogued){
                     localStorage.removeItem('token')
-                    delete axios.defaults.headers.common["Authorization"]
-                    throw new Error("Token inválido o expirado")  //lanzo error para toast
+                    throw new Error("Token inválido o expirado")  
                 }
-                
                 setUser(userLogued)
-                setJustLoggedIn(true)
                 navigate('/')
-                return true //devolvemos algo que indique éxito
-            }else{
-                throw new Error("Credenciales inválidas") // lanzo error
+            } else{
+                alert('las credenciales son erroneas')
             }
         } catch (error) {
             console.log(error);
-            throw error //propagamos el error al LoginForm
+            throw error
         }
     }
     
@@ -104,13 +98,32 @@ export const AuthProvider = ({children}) =>{
             alert('revisa tu correo electronico')
             return true
         } catch (error) {
-            console.log(error.response.data || error)
+            console.error(error.response.data || error)
+            return false
+        }
+    }
+
+    const ResetPassword = async ({id, token, password}) =>{
+        try {
+
+            const bodyResetPassword={
+                id: Number(id),
+                token,
+                password
+            }
+            const { data } = await axios.post('http://localhost:3000/auth/resetPassword', bodyResetPassword)
+            console.log("Reset backend response:", data)
+
+            alert('contraseña actualizada con exito')
+            return true
+        } catch (error) {
+            console.error("hubo un error al actualizar la contraseña", error)
             return false
         }
     }
 
     return(
-        <AuthContext.Provider value={{user, setUser, register, login, logout, justLoggedIn, setJustLoggedIn, forgotPassword}}>
+        <AuthContext.Provider value={{user, setUser, register, login, logout, justLoggedIn, setJustLoggedIn, forgotPassword, ResetPassword}}>
             {children}
         </AuthContext.Provider>
     )
