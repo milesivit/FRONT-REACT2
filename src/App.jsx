@@ -21,8 +21,9 @@ import 'primeicons/primeicons.css';
 import ForgotPassword from './layouts/auth/ForgotPassword';
 
 import PrivateRoute from './utils/PrivateRoute';
-import PublicRoute from './utils/PublicRoute'; // <- agregar
+import PublicRoute from './utils/PublicRoute'; 
 import ResetPassword from './layouts/auth/ResetPassword';
+
 
 function App() {
   return (

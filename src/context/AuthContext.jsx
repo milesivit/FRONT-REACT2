@@ -17,7 +17,6 @@ export const AuthProvider = ({children}) =>{
             if(!decoded.exp || decoded.exp * 1000 < Date.now()){
                 return null;
             }  
-            console.log("decoded", decoded);
             
             return{
                 id: decoded.user.id,
@@ -38,10 +37,8 @@ export const AuthProvider = ({children}) =>{
         const userLogued = decodeUser(token)
         if(userLogued){
         setUser(userLogued)
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
         }else{
             localStorage.removeItem('token')
-            delete axios.defaults.headers.common["Authorization"]
             setUser(null)
         }
     },[])
@@ -55,7 +52,6 @@ export const AuthProvider = ({children}) =>{
                 localStorage.setItem('token', token)
 
                 const userLogued = decodeUser(token)
-                console.log("userLogued", userLogued);
                 if(!userLogued){
                     localStorage.removeItem('token')
                     throw new Error("Token inválido o expirado")  
@@ -73,12 +69,12 @@ export const AuthProvider = ({children}) =>{
     
     const register = async (userData) =>{
         try {
-            const response = await axios.post('http://localhost:3000/auth/register', userData)
-            if(response.status === 201){
+            const { status, message } = await authService.register(userData) 
+            if(status === 201){
                 alert("Usuario creado exitosamente")
                 navigate('/inicio-sesion')
             }else{
-                throw new Error("Hubo un error al registrar el usuario")
+                throw new Error(message)
             }
         } catch (error) {
             throw error
@@ -88,13 +84,12 @@ export const AuthProvider = ({children}) =>{
     const logout = () =>{
         setUser(null)
         localStorage.removeItem('token')
-        delete axios.defaults.headers.common["Authorization"]
         navigate('/inicio-sesion')
     }
 
     const forgotPassword = async (email) =>{
         try {
-            await axios.post('http://localhost:3000/auth/forgotPassword', {email})
+            await authService.forgot(email)            
             alert('revisa tu correo electronico')
             return true
         } catch (error) {
@@ -111,7 +106,7 @@ export const AuthProvider = ({children}) =>{
                 token,
                 password
             }
-            const { data } = await axios.post('http://localhost:3000/auth/resetPassword', bodyResetPassword)
+            await authService.reset(bodyResetPassword)
             console.log("Reset backend response:", data)
 
             alert('contraseña actualizada con exito')
