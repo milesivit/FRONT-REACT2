@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import authService from '../services/authService'
+import { notifyError, notifyInfo } from "../utils/Notifier";
 
 export const AuthContext = createContext()
 
@@ -59,7 +60,7 @@ export const AuthProvider = ({children}) =>{
                 setUser(userLogued)
                 navigate('/')
             } else{
-                alert('las credenciales son erroneas')
+                notifyError(data?.message)
             }
         } catch (error) {
             console.log(error);
@@ -89,8 +90,8 @@ export const AuthProvider = ({children}) =>{
 
     const forgotPassword = async (email) =>{
         try {
-            await authService.forgot(email)            
-            alert('revisa tu correo electronico')
+            const {data} = await authService.forgot(email)            
+            notifyInfo(data?.message)
             return true
         } catch (error) {
             console.error(error.response.data || error)

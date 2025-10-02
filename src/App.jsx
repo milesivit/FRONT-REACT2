@@ -12,6 +12,9 @@ import { UserProvider } from './context/UserContext'
 import { AuthProvider } from './context/AuthContext';
 import LoginForm from './layouts/auth/LoginForm';
 import RegisterForm from './layouts/auth/RegisterForm';
+import { Toast } from 'primereact/toast';
+import { TOAST_REF } from './utils/ToastRef';
+
 
 import './App.css';
 import 'primereact/resources/themes/lara-dark-indigo/theme.css';
@@ -28,6 +31,7 @@ import ResetPassword from './layouts/auth/ResetPassword';
 function App() {
   return (
     <Router>
+      <Toast ref={TOAST_REF} position='top-right'/>
       <AuthProvider>
         <Fragment>
           <Routes>
